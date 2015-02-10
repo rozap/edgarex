@@ -2,12 +2,6 @@ defmodule Edgarex.Transform do
 
   @divider "-----"
   @exclude_cols ["", "\r"]
-  @col_delimiter "  "
-
-
-  defmodule Description do
-    defstruct text: "" 
-  end 
 
   defp clean(line) do
     Enum.filter(line, fn s -> not s in @exclude_cols  end)

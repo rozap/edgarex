@@ -39,7 +39,7 @@ defmodule EdgarexTest do
   end
 
   test "xbrl stream" do
-    F.master(2014, 4) 
+    F.xbrl(2014, 4) 
     |> Enum.take(50)
     |> Enum.each(fn r -> 
       assert Dict.has_key?(r, :filename)

@@ -1,10 +1,6 @@
 defmodule Edgarex.Fetcher do
-
   alias Edgarex.Transform
   
-  def url_for(name, year, quarter) do
-  end
-
   defp stream_it(name, year, quarter) do
     url = "/edgar/full-index/#{year}/QTR#{quarter}/#{name}.idx"
     Stream.resource(
@@ -31,7 +27,8 @@ defmodule Edgarex.Fetcher do
   @indexes [
     crawler: "  ",
     form: "  ",
-    master: "|"
+    master: "|",
+    xbrl: "|"
   ]
 
   Enum.each(@indexes, fn {name, delimiter} ->
