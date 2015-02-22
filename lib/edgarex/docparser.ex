@@ -1,4 +1,6 @@
 defmodule Edgarex.Docparser do
+
+
   defmodule Document do
     @derive [Access, Enumerable]
     defstruct type: "", sequence: "", filename: "", description: "", text: "", tree: nil
@@ -59,6 +61,11 @@ defmodule Edgarex.Docparser do
   defp parse_doc("\n" <> rest, key, doc, current, docs) do
     parse_doc(rest, key, doc, current, docs)
   end
+
+  defp parse_doc("\r" <> rest, key, doc, current, docs) do
+    parse_doc(rest, key, doc, current, docs)
+  end
+
 
   defp parse_doc(<<token::binary-size(1), rest::binary>>, key, doc, current, docs) do
     # doc = Map.put(doc, key, doc[key] <> token)
