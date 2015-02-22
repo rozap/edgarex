@@ -1,8 +1,0 @@
-Compiled lib/docparser.ex
-Generated edgarex.app
-.
-
-Finished in 5.4 seconds (0.06s on load, 5.3s on tests)
-1 tests, 0 failures
-
-Randomized with seed 337328
