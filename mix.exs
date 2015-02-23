@@ -49,7 +49,7 @@ defmodule Edgarex.Mixfile do
     [ 
       {:ibrowse, github: "cmullaparthi/ibrowse", tag: "v4.1.1"},
       {:httpotion, "~> 2.0.0"},
-      {:exquery, "~> 0.0.2"}
+      {:exquery, "~> 0.0.6"}
     ]
   end
 end
