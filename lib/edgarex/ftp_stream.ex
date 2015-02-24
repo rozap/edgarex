@@ -5,7 +5,7 @@ defmodule Edgarex.FTPStream do
     Stream.resource(
       fn -> 
         case :ftp.open('ftp.sec.gov') do
-          {:error, err} -> raise err
+          {:error, err} -> raise Atom.to_string(err)
           {:ok, ftp} ->
             :ftp.user(ftp, 'anonymous', '')
             :ftp.recv_chunk_start(ftp, String.to_char_list(uri))
