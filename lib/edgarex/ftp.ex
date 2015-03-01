@@ -51,31 +51,24 @@ defmodule Edgarex.FTP do
       GenServer.call(pid, :is_downloading)
     end
 
+    defp has_alive_workers(state) do
+      Enum.all?(state.workers, fn w -> Process.alive? w end)
+    end
+
     def handle_call(:is_downloading, _, state) do
-      {:reply, length(state.workers) > 0, state}
+      {:reply, has_alive_workers(state), state}
     end
 
     def handle_call({:checkout, count}, _from, state) do
       checked = Enum.take(state.files, count)
       state = Dict.put(state, :files, Enum.drop(state.files, count))
 
-      worker_count = length(state.workers)
+      has_alive = has_alive_workers(state)
       case checked do
-        [] when worker_count == 0 -> {:reply, :not_downloading, state}
+        [] when not has_alive -> {:reply, :not_downloading, state}
         _ -> {:reply, checked, state}
       end
     end
-
-    def handle_call({:done, pid}, _, state) do
-      workers = Enum.filter(state.workers, fn w -> w != pid end)
-      {:reply, :ok, Dict.put(state, :workers, workers)}
-    end
-
-    def handle_call({:started, pid}, _, state) do
-      workers = [pid | state.workers]
-      {:reply, :ok, Dict.put(state, :workers, workers)}
-    end
-
 
     def handle_cast({:add, file}, state) do
       files = [file | state.files]
@@ -86,16 +79,15 @@ defmodule Edgarex.FTP do
 
       pool = self
 
-      Task.async(fn ->
-        GenServer.call(pool, {:started, self})
-
+      %Task{pid: pid} = Task.async(fn ->
         files = forms
         |> Enum.map(fn form -> {form, Edgarex.FTP.from_uri(form.file_name)} end)
         |> Enum.map(fn {form, stream} -> 
           GenServer.cast(pool, {:add, {form, Enum.into(stream, "")}})
         end)
-        GenServer.call(pool, {:done, self})
       end)
+
+      state = Dict.put(state, :workers, [pid | state.workers])
 
       {:noreply, state}
     end
