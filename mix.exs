@@ -3,7 +3,7 @@ defmodule Edgarex.Mixfile do
 
   def project do
     [app: :edgarex,
-     version: "0.0.1",
+     version: "0.0.2",
      elixir: "~> 1.0",
      description: description,
      package: package,
@@ -49,7 +49,7 @@ defmodule Edgarex.Mixfile do
     [ 
       {:ibrowse, github: "cmullaparthi/ibrowse", tag: "v4.1.1"},
       {:httpotion, "~> 2.0.0"},
-      {:exquery, "~> 0.0.7"}
+      {:exquery, "~> 0.0.9"}
     ]
   end
 end

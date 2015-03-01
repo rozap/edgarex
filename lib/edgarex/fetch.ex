@@ -3,7 +3,7 @@ defmodule Edgarex.Fetcher do
   
   defp index_stream(name, year, quarter) do
     uri = "/edgar/full-index/#{year}/QTR#{quarter}/#{name}.idx"
-    Edgarex.FTPStream.from_uri(uri)
+    Edgarex.FTP.from_uri(uri)
   end
 
 

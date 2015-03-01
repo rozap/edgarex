@@ -29,7 +29,7 @@ defmodule EdgarexTest.DocParserTest do
     end)
     |> D.doc_trees
 
-    subs = Q.one(exhibit.tree, {:tag, "TABLE", []})
+    subs = Q.one(exhibit.tree, {:tag, "table", []})
     |> List.wrap
     |> Q.all({:text, :any, []})
     |> Enum.filter(fn {:text, content, _} -> 
