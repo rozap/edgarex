@@ -43,8 +43,10 @@ defmodule EdgarexTest.FetchTest do
     {:ok, pool} = FTP.Pool.start_link
 
     FTP.Pool.download(pool, lynx)
+    :timer.sleep(100)
+    assert FTP.Pool.is_downloading?(pool) == true
     [{form, file}] = wait_for(pool)
-    
+    assert FTP.Pool.is_downloading?(pool) == true
     assert form == %{file_name: "edgar/data/1118974/0001065949-14-000251.txt"}
 
   end

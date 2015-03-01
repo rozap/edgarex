@@ -34,7 +34,7 @@ defmodule Edgarex.FTP do
     end
 
     def init(_opts) do
-      state = %{files: []}
+      state = %{files: [], workers: []}
       {:ok, state}
     end
 
@@ -47,10 +47,28 @@ defmodule Edgarex.FTP do
       GenServer.call(pid, {:checkout, count})
     end
 
+    def is_downloading?(pid) do
+      GenServer.call(pid, :is_downloading)
+    end
+
+    def handle_call(:is_downloading, _, state) do
+      {:reply, length(state.workers) > 0, state}
+    end
+
     def handle_call({:checkout, count}, _from, state) do
       checked = Enum.take(state.files, count)
       state = Dict.put(state, :files, Enum.drop(state.files, count))
       {:reply, checked, state}
+    end
+
+    def handle_call({:done, pid}, _, state) do
+      workers = Enum.filter(state.workers, fn w -> w != pid end)
+      {:reply, :ok, Dict.put(state, :workers, workers)}
+    end
+
+    def handle_call({:started, pid}, _, state) do
+      workers = [pid | state.workers]
+      {:reply, :ok, Dict.put(state, :workers, workers)}
     end
 
 
@@ -64,11 +82,14 @@ defmodule Edgarex.FTP do
       pool = self
 
       Task.async(fn ->
+        GenServer.call(pool, {:started, self})
+
         files = forms
         |> Enum.map(fn form -> {form, Edgarex.FTP.from_uri(form.file_name)} end)
         |> Enum.map(fn {form, stream} -> 
           GenServer.cast(pool, {:add, {form, Enum.into(stream, "")}})
         end)
+        GenServer.call(pool, {:done, self})
       end)
 
       {:noreply, state}
