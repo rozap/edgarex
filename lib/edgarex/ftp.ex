@@ -58,7 +58,12 @@ defmodule Edgarex.FTP do
     def handle_call({:checkout, count}, _from, state) do
       checked = Enum.take(state.files, count)
       state = Dict.put(state, :files, Enum.drop(state.files, count))
-      {:reply, checked, state}
+
+      worker_count = length(state.workers)
+      case checked do
+        [] when worker_count == 0 -> {:reply, :not_downloading, state}
+        _ -> {:reply, checked, state}
+      end
     end
 
     def handle_call({:done, pid}, _, state) do
